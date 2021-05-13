@@ -30,7 +30,6 @@ type (
 	EdgeStackConfig struct {
 		Name        string
 		FileContent string
-		Prune       bool
 	}
 
 	// HostInfo is the representation of the collection of host information
@@ -171,11 +170,6 @@ type (
 	SystemService interface {
 		GetDiskInfo() ([]PhysicalDisk, error)
 		GetPciDevices() ([]PciDevice, error)
-	}
-
-	// TLSService is used to create TLS certificates to use enable HTTPS.
-	TLSService interface {
-		GenerateCertsForHost(host string) error
 	}
 )
 

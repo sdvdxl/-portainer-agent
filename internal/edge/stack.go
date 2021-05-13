@@ -21,7 +21,6 @@ type edgeStack struct {
 	Version    int
 	FileFolder string
 	FileName   string
-	Prune      bool
 	Status     edgeStackStatus
 	Action     edgeStackAction
 }
@@ -111,7 +110,6 @@ func (manager *StackManager) updateStacksStatus(stacks map[int]int) error {
 			return err
 		}
 
-		stack.Prune = stackConfig.Prune
 		stack.Name = stackConfig.Name
 
 		folder := fmt.Sprintf("%s/%d", agent.EdgeStackFilesPath, stackID)
@@ -234,7 +232,7 @@ func (manager *StackManager) deployStack(stack *edgeStack, stackName, stackFileL
 	responseStatus := int(edgeStackStatusOk)
 	errorMessage := ""
 
-	err := manager.dockerStackService.Deploy(stackName, stackFileLocation, stack.Prune)
+	err := manager.dockerStackService.Deploy(stackName, stackFileLocation, false)
 	if err != nil {
 		log.Printf("[ERROR] [internal,edge,stack] [message: stack deployment failed] [error: %s]", err)
 		stack.Status = statusError

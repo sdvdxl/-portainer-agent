@@ -19,6 +19,7 @@ import (
 	"github.com/portainer/agent/net"
 	"github.com/portainer/agent/os"
 	cluster "github.com/portainer/agent/serf"
+	"github.com/portainer/libcrypto"
 )
 
 func main() {
@@ -158,9 +159,8 @@ func main() {
 	var signatureService agent.DigitalSignatureService
 	if !options.EdgeMode {
 		signatureService = crypto.NewECDSAService(options.SharedSecret)
-		tlsService := crypto.TLSService{}
 
-		err := tlsService.GenerateCertsForHost(advertiseAddr)
+		err := libcrypto.GenerateCertsForHost(advertiseAddr, advertiseAddr, agent.TLSCertPath, agent.TLSKeyPath)
 		if err != nil {
 			log.Fatalf("[ERROR] [main,tls] [message: Unable to generate self-signed certificates] [error: %s]", err)
 		}

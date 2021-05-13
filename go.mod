@@ -33,7 +33,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/portainer/docker-compose-wrapper v0.0.0-20210329220935-8d56f0cb5735
 	github.com/portainer/libcompose v0.5.3
-	github.com/portainer/libcrypto v0.0.0-20190723020511-2cfe5519d14f
+	github.com/portainer/libcrypto v0.0.0-20201216185936-7a703a1ea452
 	github.com/portainer/libhttp v0.0.0-20190806161840-cde6e97fcd52
 	github.com/sirupsen/logrus v1.7.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
