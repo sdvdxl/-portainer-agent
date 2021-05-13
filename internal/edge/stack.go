@@ -53,9 +53,18 @@ const (
 	edgeStackStatusAcknowledged
 )
 
+type engineStatus int
+
+const (
+	_ engineStatus = iota
+	engineStatusDockerStandalone
+	engineStatusDockerSwarm
+	engineStatusKubernetes
+)
+
 // StackManager represents a service for managing Edge stacks
 type StackManager struct {
-	isSwarm      *bool
+	engineStatus *engineStatus
 	stacks       map[edgeStackID]*edgeStack
 	stopSignal   chan struct{}
 	deployer     agent.Deployer
@@ -204,19 +213,19 @@ func (manager *StackManager) next() *edgeStack {
 	return nil
 }
 
-func (manager *StackManager) setEngineStatus(isSwarm bool) error {
-	if manager.isSwarm != nil && isSwarm == *manager.isSwarm {
+func (manager *StackManager) setEngineStatus(engineStatus engineStatus) error {
+	if manager.engineStatus != nil && engineStatus == *manager.engineStatus {
 		return nil
 	}
 
-	manager.isSwarm = &isSwarm
+	manager.engineStatus = &engineStatus
 
 	err := manager.stop()
 	if err != nil {
 		return err
 	}
 
-	deployer, err := buildDeployerService(isSwarm)
+	deployer, err := buildDeployerService(engineStatus)
 	if err != nil {
 		return err
 	}
@@ -267,18 +276,22 @@ func (manager *StackManager) deleteStack(stack *edgeStack, stackName, stackFileL
 	delete(manager.stacks, stack.ID)
 }
 
-func buildDeployerService(isSwarm bool) (agent.Deployer, error) {
-	if isSwarm {
-		return exec.NewDockerSwarmStackService(agent.DockerBinaryPath)
-	}
-
-	service, err := exec.NewDockerComposeStackService(agent.DockerBinaryPath)
-	if err != nil {
-		if err == wrapper.ErrBinaryNotFound {
-			log.Printf("[INFO] [internal,edge,stack] [message: docker-compose binary not found, falling back to libcompose]")
-			return libcompose.NewDockerComposeStackService(), nil
+func buildDeployerService(engineStatus engineStatus) (agent.Deployer, error) {
+	switch engineStatus {
+	case engineStatusDockerStandalone:
+		service, err := exec.NewDockerComposeStackService(agent.DockerBinaryPath)
+		if err != nil {
+			if err == wrapper.ErrBinaryNotFound {
+				log.Printf("[INFO] [internal,edge,stack] [message: docker-compose binary not found, falling back to libcompose]")
+				return libcompose.NewDockerComposeStackService(), nil
+			}
 		}
+		return service, nil
+	case engineStatusDockerSwarm:
+		return exec.NewDockerSwarmStackService(agent.DockerBinaryPath)
+	case engineStatusKubernetes:
+		return exec.NewKubernetesDeployer(agent.DockerBinaryPath), nil
 	}
 
-	return service, nil
+	return nil, fmt.Errorf("engine status %d not supported", engineStatus)
 }
