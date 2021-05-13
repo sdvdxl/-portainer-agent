@@ -123,6 +123,10 @@ func (manager *StackManager) updateStacksStatus(stacks map[int]int) error {
 
 		folder := fmt.Sprintf("%s/%d", agent.EdgeStackFilesPath, stackID)
 		fileName := "docker-compose.yml"
+		if *manager.engineStatus == engineStatusKubernetes {
+			fileName = fmt.Sprintf("%s.yml", stack.Name)
+		}
+
 		err = filesystem.WriteFile(folder, fileName, []byte(stackConfig.FileContent), 644)
 		if err != nil {
 			return err
