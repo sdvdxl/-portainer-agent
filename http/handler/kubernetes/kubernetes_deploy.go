@@ -39,7 +39,7 @@ func (handler *Handler) kubernetesDeploy(rw http.ResponseWriter, r *http.Request
 		return &httperror.HandlerError{http.StatusBadRequest, "Invalid request payload", err}
 	}
 
-	output, err := handler.kubernetesDeployer.Deploy(payload.StackConfig, payload.Namespace)
+	output, err := handler.kubernetesDeployer.DeployRawConfig(payload.StackConfig, payload.Namespace)
 	if err != nil {
 		return &httperror.HandlerError{http.StatusInternalServerError, "Failed deploying", err}
 	}
