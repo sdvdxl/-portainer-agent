@@ -45,7 +45,7 @@ func (service *DockerComposeStackService) Deploy(name, stackFilePath string, pru
 }
 
 // Remove executes the docker stack rm command.
-func (service *DockerComposeStackService) Remove(name string) error {
+func (service *DockerComposeStackService) Remove(name, stackFilePath string) error {
 	_, err := service.wrapper.Down("", "", name)
 	return err
 }

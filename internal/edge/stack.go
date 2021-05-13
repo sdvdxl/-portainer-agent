@@ -252,15 +252,15 @@ func (manager *StackManager) deployStack(stack *edgeStack, stackName, stackFileL
 
 func (manager *StackManager) deleteStack(stack *edgeStack, stackName, stackFileLocation string) {
 	log.Printf("[DEBUG] [internal,edge,stack] [stack_identifier: %d] [message: removing stack]", stack.ID)
-	err := filesystem.RemoveFile(stackFileLocation)
+	err := manager.deployer.Remove(stackName, stackFileLocation)
 	if err != nil {
-		log.Printf("[ERROR] [internal,edge,stack] [message: unable to delete Edge stack file] [error: %s]", err)
+		log.Printf("[ERROR] [internal,edge,stack] [message: unable to remove stack] [error: %s]", err)
 		return
 	}
 
-	err = manager.deployer.Remove(stackName)
+	err = filesystem.RemoveFile(stackFileLocation)
 	if err != nil {
-		log.Printf("[ERROR] [internal,edge,stack] [message: unable to remove stack] [error: %s]", err)
+		log.Printf("[ERROR] [internal,edge,stack] [message: unable to delete Edge stack file] [error: %s]", err)
 		return
 	}
 

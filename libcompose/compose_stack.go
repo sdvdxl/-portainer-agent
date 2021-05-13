@@ -49,7 +49,7 @@ func (manager *DockerComposeStackService) Deploy(name, stackFilePath string, pru
 	return proj.Up(context.Background(), options.Up{})
 }
 
-func (manager *DockerComposeStackService) Remove(name string) error {
+func (manager *DockerComposeStackService) Remove(name, stackFilePath string) error {
 	proj, err := docker.NewProject(&ctx.Context{
 		Context: project.Context{
 			ProjectName: name,

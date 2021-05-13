@@ -132,7 +132,7 @@ type (
 
 	Deployer interface {
 		Deploy(name, stackFilePath string, prune bool) error
-		Remove(name string) error
+		Remove(name, stackFilePath string) error
 	}
 
 	// KubernetesInfoService is used to retrieve information from a Kubernetes environment.

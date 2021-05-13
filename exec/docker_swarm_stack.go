@@ -53,7 +53,7 @@ func (service *DockerSwarmStackService) Deploy(name, stackFilePath string, prune
 }
 
 // Remove executes the docker stack rm command.
-func (service *DockerSwarmStackService) Remove(name string) error {
+func (service *DockerSwarmStackService) Remove(name, stackFilePath string) error {
 	command := service.prepareDockerCommand(service.binaryPath)
 	args := []string{"stack", "rm", name}
 	return runCommandAndCaptureStdErr(command, args, "")
