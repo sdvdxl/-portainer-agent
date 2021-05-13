@@ -130,11 +130,8 @@ type (
 		GetServiceNameFromDockerEngine(containerName string) (string, error)
 	}
 
-	// DockerStackService is a service used to deploy and remove Docker stacks
-	DockerStackService interface {
-		Login() error
-		Logout() error
-		Deploy(name, stackFileContent string, prune bool) error
+	Deployer interface {
+		Deploy(name, stackFilePath string, prune bool) error
 		Remove(name string) error
 	}
 

@@ -55,14 +55,14 @@ const (
 
 // StackManager represents a service for managing Edge stacks
 type StackManager struct {
-	isSwarm            *bool
-	stacks             map[edgeStackID]*edgeStack
-	stopSignal         chan struct{}
-	dockerStackService agent.DockerStackService
-	portainerURL       string
-	endpointID         string
-	isEnabled          bool
-	httpClient         *client.PortainerClient
+	isSwarm      *bool
+	stacks       map[edgeStackID]*edgeStack
+	stopSignal   chan struct{}
+	deployer     agent.Deployer
+	portainerURL string
+	endpointID   string
+	isEnabled    bool
+	httpClient   *client.PortainerClient
 }
 
 // newStackManager returns a pointer to a new instance of StackManager
@@ -216,11 +216,11 @@ func (manager *StackManager) setEngineStatus(isSwarm bool) error {
 		return err
 	}
 
-	dockerStackService, err := buildDockerStackService(isSwarm)
+	deployer, err := buildDeployerService(isSwarm)
 	if err != nil {
 		return err
 	}
-	manager.dockerStackService = dockerStackService
+	manager.deployer = deployer
 
 	return nil
 }
@@ -232,7 +232,7 @@ func (manager *StackManager) deployStack(stack *edgeStack, stackName, stackFileL
 	responseStatus := int(edgeStackStatusOk)
 	errorMessage := ""
 
-	err := manager.dockerStackService.Deploy(stackName, stackFileLocation, false)
+	err := manager.deployer.Deploy(stackName, stackFileLocation, false)
 	if err != nil {
 		log.Printf("[ERROR] [internal,edge,stack] [message: stack deployment failed] [error: %s]", err)
 		stack.Status = statusError
@@ -258,7 +258,7 @@ func (manager *StackManager) deleteStack(stack *edgeStack, stackName, stackFileL
 		return
 	}
 
-	err = manager.dockerStackService.Remove(stackName)
+	err = manager.deployer.Remove(stackName)
 	if err != nil {
 		log.Printf("[ERROR] [internal,edge,stack] [message: unable to remove stack] [error: %s]", err)
 		return
@@ -267,7 +267,7 @@ func (manager *StackManager) deleteStack(stack *edgeStack, stackName, stackFileL
 	delete(manager.stacks, stack.ID)
 }
 
-func buildDockerStackService(isSwarm bool) (agent.DockerStackService, error) {
+func buildDeployerService(isSwarm bool) (agent.Deployer, error) {
 	if isSwarm {
 		return exec.NewDockerSwarmStackService(agent.DockerBinaryPath)
 	}

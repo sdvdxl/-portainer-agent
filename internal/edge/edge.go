@@ -12,18 +12,17 @@ import (
 type (
 	// Manager is used to manage all Edge features through multiple sub-components. It is mainly responsible for running the Edge background process.
 	Manager struct {
-		containerPlatform  agent.ContainerPlatform
-		advertiseAddr      string
-		agentOptions       *agent.Options
-		clusterService     agent.ClusterService
-		dockerStackService agent.DockerStackService
-		edgeMode           bool
-		dockerInfoService  agent.DockerInfoService
-		key                *edgeKey
-		logsManager        *logsManager
-		pollService        *PollService
-		pollServiceConfig  *pollServiceConfig
-		stackManager       *StackManager
+		containerPlatform agent.ContainerPlatform
+		advertiseAddr     string
+		agentOptions      *agent.Options
+		clusterService    agent.ClusterService
+		edgeMode          bool
+		dockerInfoService agent.DockerInfoService
+		key               *edgeKey
+		logsManager       *logsManager
+		pollService       *PollService
+		pollServiceConfig *pollServiceConfig
+		stackManager      *StackManager
 	}
 
 	// ManagerParameters represents an object used to create a Manager
