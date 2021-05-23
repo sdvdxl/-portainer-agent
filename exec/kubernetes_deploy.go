@@ -50,7 +50,7 @@ func (deployer *KubernetesDeployer) Deploy(name string, stackFilePath string, pr
 
 func (deployer *KubernetesDeployer) Remove(name string, stackFilePath string) error {
 	args := []string{
-		"remove",
+		"delete",
 		"-f",
 		stackFilePath,
 	}
