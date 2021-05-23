@@ -33,7 +33,7 @@ func (deployer *KubernetesDeployer) Deploy(name string, stackFilePath string, pr
 	args := make([]string, 0)
 	// Specifying "--insecure-skip-tls-verify" make kubectl return error "default cluster has no server defined"
 	//args = append(args, "--insecure-skip-tls-verify")
-	// args = append(args, "--namespace", namespace)
+	args = append(args, "--namespace", "default")
 	args = append(args, "apply", "-f", stackFilePath)
 
 	var stderr bytes.Buffer
@@ -49,11 +49,10 @@ func (deployer *KubernetesDeployer) Deploy(name string, stackFilePath string, pr
 }
 
 func (deployer *KubernetesDeployer) Remove(name string, stackFilePath string) error {
-	args := []string{
-		"delete",
-		"-f",
-		stackFilePath,
-	}
+	args := []string{}
+
+	args = append(args, "--namespace", "default")
+	args = append(args, "delete", "-f", stackFilePath)
 
 	var stderr bytes.Buffer
 	cmd := exec.Command(deployer.command, args...)
